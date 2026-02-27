@@ -105,7 +105,9 @@ namespace PptxFastSearcher
             {
                 await Task.Run(() =>
                 {
-                    string[] pptxFiles = Directory.GetFiles(folderPath, "*.pptx", SearchOption.AllDirectories);
+                    string[] pptxFiles = Directory.GetFiles(folderPath, "*.pptx", SearchOption.AllDirectories)
+                              .OrderByDescending(f => File.GetLastWriteTime(f))
+                              .ToArray();
                     int totalFiles = pptxFiles.Length;
                     int processedFiles = 0;
 

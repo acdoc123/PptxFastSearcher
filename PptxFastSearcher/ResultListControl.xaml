@@ -10,7 +10,7 @@
         ItemsSource="{Binding}">
         <ListView.View>
             <GridView>
-                <GridViewColumn Width="80" Header="Hành động">
+                <GridViewColumn Width="80" Header="">
                     <GridViewColumn.CellTemplate>
                         <DataTemplate>
                             <Button

@@ -89,7 +89,7 @@
                     Margin="0,0,0,5"
                     FontStyle="Italic"
                     Foreground="Gray"
-                    Text="Chế độ tìm kiếm (Mặc định: Luôn tự động bỏ qua khoảng cách dư)" />
+                    Text="Chế độ tìm kiếm" />
                 <StackPanel>
                     <RadioButton
                         Name="rbExact"
