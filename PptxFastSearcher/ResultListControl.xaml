@@ -17,7 +17,7 @@
                                 Padding="5,2"
                                 Click="btnOpenFile_Click"
                                 Content="Mở File"
-                                Tag="{Binding FilePath}" />
+                                Tag="{Binding}" />
                         </DataTemplate>
                     </GridViewColumn.CellTemplate>
                 </GridViewColumn>
