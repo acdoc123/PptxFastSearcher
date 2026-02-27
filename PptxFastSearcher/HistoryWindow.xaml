@@ -1,0 +1,41 @@
+﻿<Window
+    x:Class="PptxFastSearcher.HistoryWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:PptxFastSearcher"
+    Title="Lịch sử tìm kiếm"
+    Width="800"
+    Height="500"
+    WindowStartupLocation="CenterOwner">
+    <Grid Margin="10">
+        <TabControl Name="tabControlHistory">
+            <TabControl.ItemTemplate>
+                <DataTemplate>
+                    <TextBlock
+                        FontWeight="SemiBold"
+                        Text="{Binding ShortKeyword}"
+                        ToolTip="{Binding Keyword}" />
+                </DataTemplate>
+            </TabControl.ItemTemplate>
+            <TabControl.ContentTemplate>
+                <DataTemplate>
+                    <Grid Margin="5">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                        </Grid.RowDefinitions>
+                        <TextBlock
+                            Grid.Row="0"
+                            Margin="0,0,0,10"
+                            FontSize="14">
+                            <Run FontWeight="Bold" Text="Từ khóa: " />
+                            <Run Foreground="Blue" Text="&quot;" /><Run Foreground="Blue" Text="{Binding Keyword}" /><Run Foreground="Blue" Text="&quot;" />
+                        </TextBlock>
+
+                        <local:ResultListControl Grid.Row="1" DataContext="{Binding Results}" />
+                    </Grid>
+                </DataTemplate>
+            </TabControl.ContentTemplate>
+        </TabControl>
+    </Grid>
+</Window>

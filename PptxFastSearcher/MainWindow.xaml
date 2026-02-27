@@ -1,0 +1,139 @@
+﻿<Window
+    x:Class="PptxFastSearcher.MainWindow"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="clr-namespace:PptxFastSearcher"
+    Title="PPTX Fast Searcher"
+    Width="800"
+    Height="600"
+    WindowStartupLocation="CenterScreen">
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="Auto" />
+        </Grid.RowDefinitions>
+
+        <StackPanel Grid.Row="0" Margin="0,0,0,15">
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Margin="0,0,10,0"
+                    VerticalAlignment="Center"
+                    FontWeight="SemiBold"
+                    Text="Thư mục:" />
+                <TextBox
+                    Name="txtFolderPath"
+                    Grid.Column="1"
+                    Height="30"
+                    VerticalContentAlignment="Center"
+                    Background="#F0F0F0"
+                    IsReadOnly="True" />
+                <Button
+                    Name="btnBrowse"
+                    Grid.Column="2"
+                    Width="100"
+                    Height="30"
+                    Margin="10,0,0,0"
+                    Click="btnBrowse_Click"
+                    Content="Chọn thư mục" />
+            </Grid>
+
+            <Grid Margin="0,0,0,10">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+                <TextBlock
+                    Margin="0,0,15,0"
+                    VerticalAlignment="Center"
+                    FontWeight="SemiBold"
+                    Text="Từ khóa:" />
+                <TextBox
+                    Name="txtKeyword"
+                    Grid.Column="1"
+                    Height="35"
+                    Padding="5,0"
+                    VerticalContentAlignment="Center"
+                    FontSize="14"
+                    KeyDown="txtKeyword_KeyDown" />
+                <Button
+                    Name="btnSearch"
+                    Grid.Column="2"
+                    Width="100"
+                    Height="35"
+                    Margin="10,0,0,0"
+                    Background="#0078D7"
+                    Click="btnSearch_Click"
+                    Content="Tìm Kiếm"
+                    FontWeight="Bold"
+                    Foreground="White" />
+                <Button
+                    Name="btnHistory"
+                    Grid.Column="3"
+                    Width="90"
+                    Height="35"
+                    Margin="10,0,0,0"
+                    Click="btnHistory_Click"
+                    Content="Lịch sử (0)" />
+            </Grid>
+
+            <StackPanel Margin="65,0,0,0">
+                <TextBlock
+                    Margin="0,0,0,5"
+                    FontStyle="Italic"
+                    Foreground="Gray"
+                    Text="Chế độ tìm kiếm (Mặc định: Luôn tự động bỏ qua khoảng cách dư)" />
+                <StackPanel>
+                    <RadioButton
+                        Name="rbExact"
+                        Margin="0,0,0,5"
+                        Content="1. Chính xác (Đúng từng chữ, hoa/thường, có dấu)" />
+                    <RadioButton
+                        Name="rbFuzzy"
+                        Margin="0,0,0,5"
+                        Content="2. Gần đúng (Bỏ qua hoa/thường, dấu tiếng Việt, dấu câu)"
+                        IsChecked="True" />
+                    <RadioButton Name="rbLoose" Content="3. Mở rộng (Các từ khóa nằm rải rác, không cần liền nhau)" />
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+
+        <local:ResultListControl x:Name="mainResultControl" Grid.Row="1" />
+
+        <Grid Grid.Row="2" Margin="0,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ProgressBar
+                Name="pbSearchProgress"
+                Height="20"
+                Maximum="100"
+                Minimum="0"
+                Visibility="Collapsed" />
+            <TextBlock
+                Name="txtStatus"
+                Grid.Column="1"
+                Margin="10,0,0,0"
+                VerticalAlignment="Center"
+                Foreground="Gray"
+                Text="Sẵn sàng..." />
+            <Button
+                Name="btnCancel"
+                Grid.Column="2"
+                Margin="10,0,0,0"
+                Padding="5,0"
+                Click="btnCancel_Click"
+                Content="❌ Hủy tìm"
+                Visibility="Collapsed" />
+        </Grid>
+    </Grid>
+</Window>
