@@ -6,6 +6,7 @@
     Title="Lịch sử tìm kiếm"
     Width="800"
     Height="500"
+    Icon="/Resources/search_logo.ico"
     WindowStartupLocation="CenterOwner">
     <Grid Margin="10">
         <TabControl Name="tabControlHistory">
