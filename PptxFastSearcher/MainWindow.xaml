@@ -19,7 +19,7 @@
         <TaskbarItemInfo />
     </Window.TaskbarItemInfo>
 
-    <Grid Margin="20">
+    <Grid Margin="10">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
@@ -28,7 +28,7 @@
 
         <StackPanel Grid.Row="0" Margin="0,0,0,15">
 
-            <Grid Margin="0,0,0,15">
+            <Grid Margin="0,0,0,10">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -52,7 +52,7 @@
                     Cursor="Hand" />
             </Grid>
 
-            <Grid Margin="0,0,0,15">
+            <Grid Margin="0,0,0,5">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="Auto" />
@@ -89,13 +89,13 @@
                     ToolTip="Hiển thị 6 lịch sử gần nhất trong phiên hiện tại" />
             </Grid>
 
-            <WrapPanel Orientation="Horizontal">
+            <WrapPanel Margin="0" Orientation="Horizontal">
                 <GroupBox
-                    Margin="0,0,15,10"
+                    Margin="0,0,15,0"
                     materialDesign:ColorZoneAssist.Mode="Standard"
                     Header="Chế độ tìm kiếm"
                     Style="{StaticResource MaterialDesignCardGroupBox}">
-                    <WrapPanel Margin="5" Orientation="Horizontal">
+                    <WrapPanel Margin="0" Orientation="Horizontal">
                         <RadioButton
                             Name="rbExact"
                             Margin="0,0,15,5"
@@ -116,7 +116,7 @@
                 </GroupBox>
 
                 <GroupBox
-                    Margin="0,0,0,10"
+                    Margin="0,0,0,0"
                     materialDesign:ColorZoneAssist.Mode="Standard"
                     Header="⚡ Hiệu suất CPU"
                     Style="{StaticResource MaterialDesignCardGroupBox}"
@@ -124,7 +124,7 @@
                     <ComboBox
                         Name="cmbPerformance"
                         Width="180"
-                        Margin="5"
+                        Margin="0"
                         Padding="5"
                         SelectedIndex="0">
                         <ComboBoxItem Content="1. Bình thường (1 Nhân)" />
@@ -138,7 +138,22 @@
             </WrapPanel>
         </StackPanel>
 
-        <local:ResultListControl x:Name="mainResultControl" Grid.Row="1" />
+        <Grid Grid.Row="1" Margin="0,-10,0,0">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <TextBlock
+                Grid.Row="0"
+                Margin="5,0,0,0"
+                FontSize="13"
+                FontStyle="Italic"
+                Foreground="Gray"
+                Text="* Sắp xếp theo thứ tự thời gian chỉnh sửa gần nhất" />
+
+            <local:ResultListControl x:Name="mainResultControl" Grid.Row="1" />
+        </Grid>
 
         <Grid Grid.Row="2" Margin="0,15,0,0">
             <Grid.ColumnDefinitions>

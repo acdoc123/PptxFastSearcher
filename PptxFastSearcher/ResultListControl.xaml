@@ -33,18 +33,20 @@
                             <ColumnDefinition Width="Auto" />
                         </Grid.ColumnDefinitions>
 
-                        <StackPanel Grid.Column="0" Margin="0,0,15,0">
+                        <StackPanel
+                            Grid.Column="0"
+                            Margin="0,0,15,0"
+                            VerticalAlignment="Center">
                             <TextBlock
-                                FontSize="15"
+                                Margin="0,0,0,8"
+                                FontSize="14"
                                 FontWeight="Bold"
                                 Foreground="#1976D2"
-                                Text="{Binding FileName}"
-                                TextWrapping="Wrap" />
-                            <TextBlock
-                                Margin="0,2,0,8"
-                                FontSize="12"
-                                Foreground="#757575"
-                                Text="{Binding SlideNumber}" />
+                                Text="{Binding DisplayPath}"
+                                TextTrimming="CharacterEllipsis"
+                                TextWrapping="NoWrap"
+                                ToolTip="{Binding FilePath}" />
+
                             <TextBlock
                                 MaxHeight="60"
                                 FontSize="13"
@@ -53,14 +55,25 @@
                                 TextWrapping="Wrap" />
                         </StackPanel>
 
-                        <Button
+                        <StackPanel
                             Grid.Column="1"
-                            VerticalAlignment="Center"
-                            Click="btnOpenFile_Click"
-                            Content="Mở File"
-                            Cursor="Hand"
-                            Style="{StaticResource MaterialDesignFlatMidBgButton}"
-                            Tag="{Binding}" />
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center">
+                            <Button
+                                Click="btnOpenFile_Click"
+                                Content="Mở File"
+                                Cursor="Hand"
+                                Style="{StaticResource MaterialDesignFlatMidBgButton}"
+                                Tag="{Binding}" />
+
+                            <TextBlock
+                                Margin="0,5,0,0"
+                                HorizontalAlignment="Center"
+                                FontSize="12"
+                                FontWeight="SemiBold"
+                                Foreground="#757575"
+                                Text="{Binding SlideNumber}" />
+                        </StackPanel>
                     </Grid>
                 </Border>
             </DataTemplate>

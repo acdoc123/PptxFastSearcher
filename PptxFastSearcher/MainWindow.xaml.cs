@@ -171,14 +171,17 @@ namespace PptxFastSearcher
 
                                 if (isMatch)
                                 {
-                                    // 1. Lấy thời gian của file hiện tại ngay trong luồng nền (tránh lag UI)
                                     DateTime fileTime = File.GetLastWriteTime(file);
+                                    string rootFolderName = new DirectoryInfo(folderPath).Name;
+                                    string relativePath = file.Substring(folderPath.Length).TrimStart(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+                                    string displayPath = Path.Combine(rootFolderName, relativePath);
 
                                     var newResult = new SearchResult
                                     {
                                         FileName = Path.GetFileName(file),
                                         FilePath = file,
                                         SlideNumber = $"Slide {i + 1}",
+                                        DisplayPath = displayPath,
                                         MatchedText = cleanContent.Length > 200 ? cleanContent.Substring(0, 200) + "..." : cleanContent,
                                         LastWriteTime = fileTime // Gắn thời gian vào kết quả
                                     };
