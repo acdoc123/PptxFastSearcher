@@ -120,7 +120,7 @@
                     materialDesign:ColorZoneAssist.Mode="Standard"
                     Header="⚡ Hiệu suất CPU"
                     Style="{StaticResource MaterialDesignCardGroupBox}"
-                    ToolTip="50% và 100% sẽ sắp xếp kết quả theo thứ tự sau khi hoàn tất tìm kiếm">
+                    ToolTip="50% và 100% có thể gây lag/giật và sẽ sắp xếp kết quả theo thứ tự sau khi hoàn tất tìm kiếm">
                     <ComboBox
                         Name="cmbPerformance"
                         Width="180"
