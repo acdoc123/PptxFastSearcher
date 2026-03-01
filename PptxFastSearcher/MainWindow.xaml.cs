@@ -94,7 +94,9 @@ namespace PptxFastSearcher
             btnCancel.IsEnabled = true;
             pbSearchProgress.Visibility = Visibility.Visible;
             txtStatus.Text = "Đang quét file...";
-
+            //Bật thanh tiến trình Taskbar (Màu xanh lá)
+            TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
+            TaskbarItemInfo.ProgressValue = 0;
             // Khởi tạo CancellationToken mới cho phiên tìm kiếm này
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;
@@ -168,6 +170,8 @@ namespace PptxFastSearcher
                         {
                             pbSearchProgress.Value = (processedFiles * 100) / totalFiles;
                             txtStatus.Text = $"Đã quét: {processedFiles}/{totalFiles} file";
+                            //Taskbar nhận giá trị từ 0.0 đến 1.0
+                            TaskbarItemInfo.ProgressValue = (double)processedFiles / totalFiles;
                         });
                     }
                 }, token);
@@ -176,6 +180,8 @@ namespace PptxFastSearcher
                 if (!token.IsCancellationRequested)
                 {
                     txtStatus.Text = $"Hoàn tất! Tìm thấy {CurrentResults.Count} kết quả.";
+                    // Tắt thanh Taskbar khi hoàn tất
+                    TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.None;
 
                     // LƯU LỊCH SỬ
                     SearchHistory.Insert(0, new SearchHistorySession
@@ -192,11 +198,15 @@ namespace PptxFastSearcher
                 else
                 {
                     txtStatus.Text = "Đã hủy quá trình tìm kiếm.";
+                    TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.None;
                 }
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Có lỗi xảy ra: {ex.Message}");
+                // THÊM DÒNG NÀY: Đổi Taskbar thành màu ĐỎ báo lỗi
+                TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Error;
+                TaskbarItemInfo.ProgressValue = 1.0;
             }
             finally
             {
