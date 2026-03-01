@@ -27,6 +27,9 @@ namespace PptxFastSearcher.Core
         public static string RemoveDiacritics(string text)
         {
             if (string.IsNullOrWhiteSpace(text)) return string.Empty;
+            //Xử lý thủ công chữ đ và Đ vì Normalize không nhận diện được
+            text = text.Replace("đ", "d").Replace("Đ", "D");
+
             var normalizedString = text.Normalize(NormalizationForm.FormD);
             var stringBuilder = new StringBuilder();
 
