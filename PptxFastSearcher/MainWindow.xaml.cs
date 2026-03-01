@@ -85,6 +85,7 @@ namespace PptxFastSearcher
             bool isExact = rbExact.IsChecked == true;
             bool isFuzzy = rbFuzzy.IsChecked == true;
             bool isLoose = rbLoose.IsChecked == true;
+            int performanceMode = cmbPerformance.SelectedIndex;
 
             CurrentResults.Clear();
             btnSearch.IsEnabled = false;
@@ -94,9 +95,11 @@ namespace PptxFastSearcher
             btnCancel.IsEnabled = true;
             pbSearchProgress.Visibility = Visibility.Visible;
             txtStatus.Text = "Đang quét file...";
-            //Bật thanh tiến trình Taskbar (Màu xanh lá)
+
+            // Bật thanh tiến trình Taskbar (Màu xanh lá)
             TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Normal;
             TaskbarItemInfo.ProgressValue = 0;
+
             // Khởi tạo CancellationToken mới cho phiên tìm kiếm này
             _cancellationTokenSource = new CancellationTokenSource();
             var token = _cancellationTokenSource.Token;
@@ -113,66 +116,105 @@ namespace PptxFastSearcher
                     int totalFiles = pptxFiles.Length;
                     int processedFiles = 0;
 
-                    foreach (string file in pptxFiles)
+                    // TÍNH TOÁN SỐ LUỒNG (NHÂN CPU) DỰA TRÊN LỰA CHỌN
+                    int maxThreads = 1; // Mặc định luôn là 1 nhân (An toàn tuyệt đối)
+
+                    if (performanceMode == 1) // Chế độ Cao (50%)
                     {
-                        // KIỂM TRA XEM NGƯỜI DÙNG CÓ BẤM HỦY KHÔNG
-                        if (token.IsCancellationRequested)
+                        maxThreads = Math.Max(1, Environment.ProcessorCount / 2);
+                    }
+                    else if (performanceMode == 2) // Chế độ Turbo (100%)
+                    {
+                        maxThreads = Environment.ProcessorCount;
+                    }
+
+                    // CẤU HÌNH ĐA LUỒNG
+                    ParallelOptions options = new ParallelOptions
+                    {
+                        MaxDegreeOfParallelism = maxThreads,
+                        CancellationToken = token
+                    };
+
+                    try
+                    {
+                        // SỬ DỤNG PARALLEL ĐỂ QUÉT SONG SONG CÁC FILE
+                        Parallel.ForEach(pptxFiles, options, file =>
                         {
-                            break; // Thoát khỏi vòng lặp quét file ngay lập tức
-                        }
+                            var slidesText = PptxReader.ExtractTextFromPptx(file);
 
-                        var slidesText = PptxReader.ExtractTextFromPptx(file);
-
-                        for (int i = 0; i < slidesText.Count; i++)
-                        {
-                            string slideContent = slidesText[i];
-                            if (string.IsNullOrWhiteSpace(slideContent)) continue;
-
-                            string cleanContent = SearchEngine.NormalizeSpaces(slideContent);
-                            bool isMatch = false;
-
-                            if (isExact)
+                            for (int i = 0; i < slidesText.Count; i++)
                             {
-                                isMatch = cleanContent.Contains(cleanKeyword);
-                            }
-                            else
-                            {
-                                string processedKey = SearchEngine.RemovePunctuation(SearchEngine.RemoveDiacritics(cleanKeyword)).ToLowerInvariant();
-                                string processedContent = SearchEngine.RemovePunctuation(SearchEngine.RemoveDiacritics(cleanContent)).ToLowerInvariant();
+                                string slideContent = slidesText[i];
+                                if (string.IsNullOrWhiteSpace(slideContent)) continue;
 
-                                if (isFuzzy) isMatch = processedContent.Contains(processedKey);
-                                else if (isLoose)
+                                string cleanContent = SearchEngine.NormalizeSpaces(slideContent);
+                                bool isMatch = false;
+
+                                if (isExact)
                                 {
-                                    string[] words = processedKey.Split(' ');
-                                    isMatch = true;
-                                    foreach (string word in words)
-                                        if (!processedContent.Contains(word)) { isMatch = false; break; }
+                                    isMatch = cleanContent.Contains(cleanKeyword);
                                 }
-                            }
-
-                            if (isMatch)
-                            {
-                                Application.Current.Dispatcher.Invoke(() =>
+                                else
                                 {
-                                    CurrentResults.Add(new SearchResult
+                                    string processedKey = SearchEngine.RemovePunctuation(SearchEngine.RemoveDiacritics(cleanKeyword)).ToLowerInvariant();
+                                    string processedContent = SearchEngine.RemovePunctuation(SearchEngine.RemoveDiacritics(cleanContent)).ToLowerInvariant();
+
+                                    if (isFuzzy) isMatch = processedContent.Contains(processedKey);
+                                    else if (isLoose)
+                                    {
+                                        string[] words = processedKey.Split(' ');
+                                        isMatch = true;
+                                        foreach (string word in words)
+                                            if (!processedContent.Contains(word)) { isMatch = false; break; }
+                                    }
+                                }
+
+                                if (isMatch)
+                                {
+                                    // 1. Lấy thời gian của file hiện tại ngay trong luồng nền (tránh lag UI)
+                                    DateTime fileTime = File.GetLastWriteTime(file);
+
+                                    var newResult = new SearchResult
                                     {
                                         FileName = Path.GetFileName(file),
                                         FilePath = file,
                                         SlideNumber = $"Slide {i + 1}",
-                                        MatchedText = cleanContent.Length > 200 ? cleanContent.Substring(0, 200) + "..." : cleanContent
-                                    });
-                                });
-                            }
-                        }
+                                        MatchedText = cleanContent.Length > 200 ? cleanContent.Substring(0, 200) + "..." : cleanContent,
+                                        LastWriteTime = fileTime // Gắn thời gian vào kết quả
+                                    };
 
-                        processedFiles++;
-                        Application.Current.Dispatcher.Invoke(() =>
-                        {
-                            pbSearchProgress.Value = (processedFiles * 100) / totalFiles;
-                            txtStatus.Text = $"Đã quét: {processedFiles}/{totalFiles} file";
-                            //Taskbar nhận giá trị từ 0.0 đến 1.0
-                            TaskbarItemInfo.ProgressValue = (double)processedFiles / totalFiles;
+                                    // 2. Đưa kết quả lên UI một cách an toàn
+                                    Application.Current.Dispatcher.InvokeAsync(() =>
+                                    {
+                                        // TÌM VỊ TRÍ CHÈN ĐỂ DUY TRÌ THỨ TỰ TỪ MỚI NHẤT ĐẾN CŨ NHẤT
+                                        int insertPos = 0;
+                                        // Dấu >= giúp các Slide trong CÙNG 1 file giữ đúng thứ tự 1, 2, 3...
+                                        while (insertPos < CurrentResults.Count && CurrentResults[insertPos].LastWriteTime >= newResult.LastWriteTime)
+                                        {
+                                            insertPos++;
+                                        }
+
+                                        // Chèn vào đúng vị trí thay vì tống hết xuống cuối danh sách
+                                        CurrentResults.Insert(insertPos, newResult);
+                                    });
+                                }
+                            }
+
+                            // Đếm số file đã quét an toàn trong môi trường đa luồng
+                            Interlocked.Increment(ref processedFiles);
+
+                            // Cập nhật UI và Taskbar mượt mà
+                            Application.Current.Dispatcher.InvokeAsync(() =>
+                            {
+                                pbSearchProgress.Value = (processedFiles * 100) / totalFiles;
+                                txtStatus.Text = $"Đã quét: {processedFiles}/{totalFiles} file";
+                                TaskbarItemInfo.ProgressValue = (double)processedFiles / totalFiles;
+                            });
                         });
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        // Bắt lỗi khi người dùng bấm Hủy để vòng lặp Parallel dừng lại êm đẹp
                     }
                 }, token);
 
@@ -180,6 +222,7 @@ namespace PptxFastSearcher
                 if (!token.IsCancellationRequested)
                 {
                     txtStatus.Text = $"Hoàn tất! Tìm thấy {CurrentResults.Count} kết quả.";
+
                     // Tắt thanh Taskbar khi hoàn tất
                     TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.None;
 
@@ -204,7 +247,8 @@ namespace PptxFastSearcher
             catch (Exception ex)
             {
                 MessageBox.Show($"Có lỗi xảy ra: {ex.Message}");
-                // THÊM DÒNG NÀY: Đổi Taskbar thành màu ĐỎ báo lỗi
+
+                // Đổi Taskbar thành màu ĐỎ báo lỗi
                 TaskbarItemInfo.ProgressState = System.Windows.Shell.TaskbarItemProgressState.Error;
                 TaskbarItemInfo.ProgressValue = 1.0;
             }

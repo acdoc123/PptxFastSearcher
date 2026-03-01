@@ -93,7 +93,7 @@
                     Margin="0,0,0,5"
                     FontStyle="Italic"
                     Foreground="Gray"
-                    Text="Chế độ tìm kiếm" />
+                    Text="Chế độ tìm kiếm(kết quả tìm kiếm sẽ hiển thị kết quả từ file mới sửa gần nhất tới cũ nhất)" />
                 <StackPanel>
                     <RadioButton
                         Name="rbExact"
@@ -105,6 +105,30 @@
                         Content="2. Gần đúng (Bỏ qua hoa/thường, dấu tiếng Việt, dấu câu)"
                         IsChecked="True" />
                     <RadioButton Name="rbLoose" Content="3. Mở rộng (Các từ khóa nằm rải rác, không cần liền nhau)" />
+                </StackPanel>
+                <StackPanel
+                    Margin="0,15,0,0"
+                    Orientation="Horizontal"
+                    ToolTip="Chọn mức độ sử dụng CPU. Mức cao nhất có thể làm máy bị giật/lag trong vài giây quét.">
+                    <TextBlock
+                        VerticalAlignment="Center"
+                        FontWeight="SemiBold"
+                        Foreground="#D84315"
+                        Text="⚡ Hiệu suất CPU: "
+                        ToolTip="Khi sử dụng 50 hoặc 100 thì kết quả hiển thị sẽ được sắp xếp theo thứ tự sau khi tìm kiếm hoàn tất" />
+                    <ComboBox
+                        Name="cmbPerformance"
+                        Width="180"
+                        Margin="10,0,0,0"
+                        VerticalContentAlignment="Center"
+                        SelectedIndex="0">
+                        <ComboBoxItem Content="1. Bình thường (1 Nhân)" />
+                        <ComboBoxItem Content="2. Cao (50% Sức mạnh)" />
+                        <ComboBoxItem
+                            Content="3. Turbo (100% Tối đa)"
+                            FontWeight="Bold"
+                            Foreground="#D84315" />
+                    </ComboBox>
                 </StackPanel>
             </StackPanel>
         </StackPanel>
